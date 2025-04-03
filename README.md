@@ -13,3 +13,8 @@ Análise da variação de altitude e monitoramento ambiental;
 - Deve possuir um sensor de temperatura e umidade;
 - Deve possuir um sensor barometrico para calculo da altitude e pressão atmosférica;
 - Deve salvar os dados coletados em um cartão SD como backup;
+
+### Especificações para Ap1
+- microcontrolador esp32
+- sensor de distancia HC-SR04
+- protoboard
