@@ -1,12 +1,12 @@
-# Projeto CANSAT
+## Projeto CANSAT
 
-## Missão primária:  
+### Missão primária:  
 Coletar e transmitir dados atmosféricos;
 
-## Missão secundária:
+### Missão secundária:
 Análise da variação de altitude e monitoramento ambiental;
 
-## Requisitos:
+### Requisitos:
 - O equipamento deve ser capaz de captar a temperatura, altitude e umidade;
 - Conforme o satelite sobe, os dados devem ser transmitidos em tempo real;
 - O satélite deve ter um sistema de recuperação, nesse caso um paraquedas;
