@@ -1,11 +1,9 @@
 # Projeto CANSAT
 
-**Missão primária:**
-
+## Missão primária:  
 Coletar e transmitir dados atmosféricos;
 
-**Missão secundária:**
-
+## Missão secundária:
 Análise da variação de altitude e monitoramento ambiental;
 
 **Requisitos:**
