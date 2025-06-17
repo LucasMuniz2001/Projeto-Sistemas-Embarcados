@@ -1,4 +1,4 @@
-##Comparative study of RTOS and Bare-Metal Implementations in the Communication Subsystem of a CanSat
+###Comparative study of RTOS and Bare-Metal Implementations in the Communication Subsystem of a CanSat
 
 ### Principais implementações
 - Software Arduino IDE
