@@ -1,0 +1,163 @@
+**Python RTOS reciever**
+
+
+import socket
+import json
+import time
+
+PORT = 4210
+BUFFER_SIZE = 1024
+LISTEN_DURATION = 30       # segundos
+TOTAL_EXPECTED = 10000    esperados
+MODE = "RTOS"             # ou "bare-metal", se quiser mudar
+TEST_ID = str(int(time.time() * 1000) % 100000)  # algo tipo "5134"
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(('', PORT))
+sock.settimeout(1)
+
+while True:
+    received_ids = set()
+    start_ms = int(time.time() * 1000)
+
+    print(f"\n[Início] Escutando por {LISTEN_DURATION}s...")
+
+    while (time.time() * 1000 - start_ms) < LISTEN_DURATION * 1000:
+        try:
+            data, addr = sock.recvfrom(BUFFER_SIZE)
+            msg = json.loads(data.decode('utf-8'))
+            pkt_id = msg.get("packet_id")
+            if pkt_id is not None:
+                received_ids.add(pkt_id)
+        except socket.timeout:
+            continue
+        except Exception:
+            continue
+
+    end_ms = int(time.time() * 1000)
+    received = len(received_ids)
+    loss = TOTAL_EXPECTED - received
+    loss_percent = round((loss / TOTAL_EXPECTED) * 100, 2)
+
+    # 🧾 JSON no estilo do ESP32
+    result = {
+        "test_id": TEST_ID,
+        "mode": MODE,
+        "start_ms": start_ms,
+        "end_ms": end_ms,
+        "sent": TOTAL_EXPECTED,
+        "rcvd": received,
+        "loss%": loss_percent
+    }
+
+    print(json.dumps(result))
+
+    break  
+
+
+
+
+  } 
+}
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+**Python bare metal reciever**
+
+
+import socket
+import json
+import time
+
+PORT = 4210
+BUFFER_SIZE = 1024
+LISTEN_DURATION = 30       # segundos por ciclo
+TOTAL_EXPECTED = 10000    # total de pacotes esperados
+MODE = "RTOS"             # ou "bare-metal", se quiser mudar
+TEST_ID = str(int(time.time() * 1000) % 100000)  # algo tipo "5134"
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(('', PORT))
+sock.settimeout(1)
+
+while True:
+    received_ids = set()
+    start_ms = int(time.time() * 1000)
+
+    print(f"\n[Início] Escutando por {LISTEN_DURATION}s...")
+
+    while (time.time() * 1000 - start_ms) < LISTEN_DURATION * 1000:
+        try:
+            data, addr = sock.recvfrom(BUFFER_SIZE)
+            msg = json.loads(data.decode('utf-8'))
+            pkt_id = msg.get("packet_id")
+            if pkt_id is not None:
+                received_ids.add(pkt_id)
+        except socket.timeout:
+            continue
+        except Exception:
+            continue
+
+    end_ms = int(time.time() * 1000)
+    received = len(received_ids)
+    loss = TOTAL_EXPECTED - received
+    loss_percent = round((loss / TOTAL_EXPECTED) * 100, 2)
+
+    # 🧾 JSON no estilo do ESP32
+    result = {
+        "test_id": TEST_ID,
+        "mode": MODE,
+        "start_ms": start_ms,
+        "end_ms": end_ms,
+        "sent": TOTAL_EXPECTED,
+        "rcvd": received,
+        "loss%": loss_percent
+    }
+
+    print(json.dumps(result))
+
+    break  
+
+----------------------------------------------------------------------------------------------
+
+**Esp32 sender**
+
+
+#include <WiFi.h>
+#include <WiFiUdp.h>
+
+const char* SSID = "Rubin's Wi-Fi Network";
+const char* PASS = "RUGIMUDIBRU";
+const char* DEST_IP = "192.168.0.212";  // Coloque aqui o IP do seu PC
+const uint16_t DEST_PORT = 4210;
+
+WiFiUDP udp;
+int totalPackets = 10000;
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(SSID, PASS);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nConectado ao Wi-Fi");
+  delay(1000);
+
+  // Envia os pacotes
+  for (int i = 1; i <= totalPackets; i++) {
+    String msg = "{\"packet_id\":" + String(i) + ",\"payload\":\"ABCD\"}";
+    udp.beginPacket(DEST_IP, DEST_PORT);
+    udp.write((const uint8_t*)msg.c_str(), msg.length());  // CORRETO
+    udp.endPacket();
+    delay(2);
+  }
+
+
+  Serial.println("Todos os pacotes enviados.");
+}
+
+void loop() {
+  // nada aqui
+}
+
